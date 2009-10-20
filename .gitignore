@@ -1,2 +1,5 @@
 rdoc
 coverage
+pkg
+NotAMock*.gem
+NotAMock*.gemspec
