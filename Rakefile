@@ -22,3 +22,18 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('TODO')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
+namespace :jeweler do
+	require 'jeweler'	
+	Jeweler::Tasks.new do |gs|
+		gs.name = "NotAMock"
+		gs.summary = "A cleaner and DRYer alternative to mocking and stubbing with RSpec"
+		gs.description = "A cleaner and DRYer alternative to mocking and stubbing with RSpec, using Arrange-Act-Assert syntax"
+		gs.email = "pete@notahat.com"
+		gs.homepage = "http://notahat.com/not_a_mock"
+		gs.authors = "Pete Yandell"
+		gs.has_rdoc = false	
+		gs.files.exclude("NotAMock.gemspec", ".gitignore")
+		gs.add_dependency('rspec', '>= 1.2.9')
+	end
+end
