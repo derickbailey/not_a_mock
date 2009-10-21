@@ -1,3 +1,4 @@
+require 'not_a_mock/rspec_mock_framework_adapter'
 require 'not_a_mock/active_record_extensions'
 require 'not_a_mock/argument_constraint_extensions'
 require 'not_a_mock/call_recorder'
