@@ -11,15 +11,15 @@ end
 describe BlockTest, "when stubbing a method with a block, and yielding to that block" do
 	before :all do
 		bt = BlockTest.new
-		
-		bt.stub_method(:block_method){ 
-			puts 'this is a stub. block given?: ' + block_given?.to_s
-			yield if block_given?
+
+		bt.stub_method(:block_method) {
+			puts 'this is a stub----------------------'
 		}
-		
+
 		@block_executed = false
 		bt.block_method() do
 			@block_executed = true
+			puts '-----------this is a block!!!!!!!!!!!!!------------'
 		end
 	end
 	

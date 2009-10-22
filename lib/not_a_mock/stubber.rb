@@ -1,7 +1,10 @@
 require 'singleton'
 require 'not_a_mock/object_extensions'
 
+
+
 module NotAMock
+	
   # The Stubber is a singleton that keeps track of all the stub methods
   # installed in any object.
   class Stubber
@@ -9,6 +12,7 @@ module NotAMock
   
     def initialize
       @stubbed_methods = []
+      @stubbed_blocks = {}
     end
   
     # Stub +method+ on +object+ to evalutate +block+ and return the result.
@@ -17,7 +21,8 @@ module NotAMock
     def stub_method(object, method, &block) #:nodoc:
       unless @stubbed_methods.include?([object, method])
         @stubbed_methods << [object, method]
-        add_hook(object, method, &block)
+        @stubbed_blocks[[object, method]] = block
+        add_hook(object, method)
       end
     end
         
@@ -26,6 +31,7 @@ module NotAMock
     # You should call Object#unstub_methods rather than calling this directly.
     def unstub_method(object, method) #:nodoc:
       if @stubbed_methods.delete([object, method])
+      	@stubbed_blocks.delete([object, method])
         remove_hook(object, method)
       end
     end
@@ -38,14 +44,26 @@ module NotAMock
       @stubbed_methods = []
     end
     
+    def get_block(obj, meth)
+    	@stubbed_blocks[[obj, meth]]
+    end
+    
   private
 
-    def add_hook(object, method, &block)
+    def add_hook(object, method)
       method_exists = method_at_any_level?(object, method.to_s)
       object.meta_eval do
         alias_method("__unstubbed_#{method}", method) if method_exists
-        define_method(method, &block)
       end
+      object.instance_eval(<<-EOF, __FILE__, __LINE__)
+        def #{method}
+          yield if block_given?
+          meth = Stubber.instance.get_block(self, :#{method})
+          return_value = nil
+          return_value = meth.call unless meth.nil?
+          return_value
+        end   
+      EOF
     end
   
     def remove_hook(object, method)
