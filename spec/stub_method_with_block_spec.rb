@@ -2,7 +2,7 @@ $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
 require 'not_a_mock'
 
 class BlockTest
-	def test
+	def block_method
 		puts "this is the real method."
 		yield if block_given?
 	end
