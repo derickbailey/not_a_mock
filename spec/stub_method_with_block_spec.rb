@@ -97,7 +97,11 @@ describe NotAMock::Stubber, "when stubbing a method on an object that is yielded
 		@yieldtest.do_something
 	end
 	
-	it "should track the method call" do
+	it "should track the method call on the yielded object" do
 		@stubyielded.should have_received(:yielding_test)
+	end
+	
+	it "should track the method call on the yielding object" do
+		YieldingObject.should have_received(:yield_test)
 	end
 end
