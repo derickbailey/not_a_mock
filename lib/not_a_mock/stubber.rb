@@ -65,7 +65,7 @@ module NotAMock
         def #{method}(*args, &block)
           yielder = Stubber.instance.get_yielder(self, :#{method})
           if !yielder.yield_values.empty?
-          	yield yielder.yield_values if block_given?
+          	yield *yielder.yield_values if block_given?
           else
             yield if block_given?
           end
