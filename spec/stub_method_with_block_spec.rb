@@ -17,11 +17,31 @@ class BlockTest
 	end
 end
 
-describe BlockTest, "when stubbing a method that is called with a block" do
+class YieldingObject
+	def self.yield_test
+		obj = YieldedObject.new
+		yield obj if block_given?
+	end
+end
+
+class YieldedObject
+	def yielding_test
+	end
+end
+
+class YieldTest
+	def do_something
+		YieldingObject.yield_test {|obj|
+			obj.yielding_test
+		}
+	end
+end
+
+describe NotAMock::Stubber, "when stubbing a method that is called with a block" do
 	before :all do
 		@bt = BlockTest.new
 
-		@bt.stub_method(:block_method) {}
+		@bt.stub_method(:block_method)
 		
 		@block_executed = false
 		@bt.block_method(){ @block_executed = true }
@@ -34,9 +54,13 @@ describe BlockTest, "when stubbing a method that is called with a block" do
 	it "should not call the real method" do
 		@bt.real_method_called.should be_false
 	end
+	
+	it "should track the method call" do
+		@bt.should have_received(:block_method)
+	end
 end
 
-describe BlockTest, "when stubbing a method that yields two values" do
+describe NotAMock::Stubber, "when stubbing a method that yields two values" do
 	before :all do
 		@bt = BlockTest.new
 
@@ -55,5 +79,35 @@ describe BlockTest, "when stubbing a method that yields two values" do
 	
 	it "should yield the second value" do
 		@yielded_int.should == 2
+	end
+	
+	it "should track the method call" do
+		@bt.should have_received(:method_that_yields_a_value)
+	end
+end 
+
+describe NotAMock::Stubber, "when stubbing a method on an object that is yielded to a block" do
+	before :all do
+		Spec::Runner.configure do |config|
+			config.mock_with NotAMock::RspecMockFrameworkAdapter
+		end
+
+		@stubyielded = YieldedObject.new
+		@stubyielded.stub_method(:yielding_test)
+		
+		YieldingObject.stub_method(:yield_test).yields(@stubyielded)
+		
+		@yieldtest = YieldTest.new
+		@yieldtest.do_something
+	end
+	
+	after :all do
+		Spec::Runner.configure do |config|
+			config.mock_with :rspec
+		end
+	end
+	
+	it "should track the method call" do
+		@stubyielded.should have_received(:yielding_test)
 	end
 end
