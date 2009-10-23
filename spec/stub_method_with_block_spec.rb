@@ -88,10 +88,6 @@ end
 
 describe NotAMock::Stubber, "when stubbing a method on an object that is yielded to a block" do
 	before :all do
-		Spec::Runner.configure do |config|
-			config.mock_with NotAMock::RspecMockFrameworkAdapter
-		end
-
 		@stubyielded = YieldedObject.new
 		@stubyielded.stub_method(:yielding_test)
 		
@@ -99,12 +95,6 @@ describe NotAMock::Stubber, "when stubbing a method on an object that is yielded
 		
 		@yieldtest = YieldTest.new
 		@yieldtest.do_something
-	end
-	
-	after :all do
-		Spec::Runner.configure do |config|
-			config.mock_with :rspec
-		end
 	end
 	
 	it "should track the method call" do
