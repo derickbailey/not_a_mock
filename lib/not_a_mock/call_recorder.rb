@@ -67,12 +67,18 @@ module NotAMock
     def add_hook(object, method)
       object.meta_eval do
         alias_method("__unlogged_#{method}", method)
-        define_method(method) {|*args| CallRecorder.instance.send(:record_and_send, self, method, args) }
+        #define_method(method) {|*args| CallRecorder.instance.send(:record_and_send, self, method, args) }
       end
+      object.instance_eval(<<-EOF, __FILE__, __LINE__)
+        def #{method} (*args, &block)
+          return_value = NotAMock::CallRecorder.instance.send(:record_and_send, self, :#{method}, args, &block)
+          return_value
+        end   
+      EOF
     end
 
-    def record_and_send(object, method, args)
-      result = object.send("__unlogged_#{method}", *args)
+    def record_and_send(object, method, args, &block)
+      result = object.send("__unlogged_#{method}", *args, &block)
       @calls << { :object => object, :method => method, :args => args, :result => result }
       result
     end

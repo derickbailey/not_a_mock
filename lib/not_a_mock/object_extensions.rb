@@ -34,12 +34,13 @@ class Object
   # so you can later make assertions about them as described in
   # NotAMock::Matchers.
   def stub_method(method, &block)
+  	obj = self
     case method
       when Symbol
-        NotAMock::CallRecorder.instance.untrack_method(self, method)
-        NotAMock::Stubber.instance.unstub_method(self, method)
-        NotAMock::Stubber.instance.stub_method(self, method, &block)
-        NotAMock::CallRecorder.instance.track_method(self, method)
+        NotAMock::CallRecorder.instance.untrack_method(obj, method)
+        NotAMock::Stubber.instance.unstub_method(obj, method)
+        NotAMock::Stubber.instance.stub_method(obj, method, &block)
+        NotAMock::CallRecorder.instance.track_method(obj, method)
       when Hash
         stub_methods(method)
       else

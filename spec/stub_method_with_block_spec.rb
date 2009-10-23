@@ -8,19 +8,14 @@ class BlockTest
 	end
 end
 
-describe BlockTest, "when stubbing a method with a block, and yielding to that block" do
+describe BlockTest, "when stubbing a method that is called with a block" do
 	before :all do
 		bt = BlockTest.new
 
-		bt.stub_method(:block_method) {
-			puts 'this is a stub----------------------'
-		}
-
+		bt.stub_method(:block_method) {}
+		
 		@block_executed = false
-		bt.block_method() do
-			@block_executed = true
-			puts '-----------this is a block!!!!!!!!!!!!!------------'
-		end
+		bt.block_method(){ @block_executed = true }
 	end
 	
 	it "should execute the block" do

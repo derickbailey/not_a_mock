@@ -56,11 +56,11 @@ module NotAMock
         alias_method("__unstubbed_#{method}", method) if method_exists
       end
       object.instance_eval(<<-EOF, __FILE__, __LINE__)
-        def #{method}
+        def #{method}(*args, &block)
           yield if block_given?
           meth = Stubber.instance.get_block(self, :#{method})
           return_value = nil
-          return_value = meth.call unless meth.nil?
+          return_value = meth.call(*args) unless meth.nil?
           return_value
         end   
       EOF

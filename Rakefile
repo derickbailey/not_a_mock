@@ -9,7 +9,7 @@ desc "Run all the specs for the notamock plugin."
 Spec::Rake::SpecTask.new do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
   t.spec_opts = ['--colour']
-  t.rcov = true
+ # t.rcov = true
 end
 
 desc "Generate documentation for the notamock plugin."
