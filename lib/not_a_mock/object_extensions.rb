@@ -39,13 +39,14 @@ class Object
       when Symbol
         NotAMock::CallRecorder.instance.untrack_method(obj, method)
         NotAMock::Stubber.instance.unstub_method(obj, method)
-        NotAMock::Stubber.instance.stub_method(obj, method, &block)
+        stubber = NotAMock::Stubber.instance.stub_method(obj, method, &block)
         NotAMock::CallRecorder.instance.track_method(obj, method)
       when Hash
         stub_methods(method)
       else
         raise ArgumentError
     end
+    stubber
   end
   
   # Takes a hash of method names mapped to results, and replaces each named

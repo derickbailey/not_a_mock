@@ -1,8 +1,6 @@
 require 'singleton'
 require 'not_a_mock/object_extensions'
 
-
-
 module NotAMock
 	
   # The Stubber is a singleton that keeps track of all the stub methods
@@ -13,6 +11,7 @@ module NotAMock
     def initialize
       @stubbed_methods = []
       @stubbed_blocks = {}
+      @yield_values = {}
     end
   
     # Stub +method+ on +object+ to evalutate +block+ and return the result.
@@ -22,8 +21,11 @@ module NotAMock
       unless @stubbed_methods.include?([object, method])
         @stubbed_methods << [object, method]
         @stubbed_blocks[[object, method]] = block
+        yielder = NotAMock::Yielder.new()
+        @yield_values[[object, method]] = yielder
         add_hook(object, method)
       end
+      yielder
     end
         
     # Remove the stubbed +method+ on +object+.
@@ -48,6 +50,10 @@ module NotAMock
     	@stubbed_blocks[[obj, meth]]
     end
     
+    def get_yielder(obj, meth)
+    	@yield_values[[obj, meth]]
+    end
+    
   private
 
     def add_hook(object, method)
@@ -57,7 +63,12 @@ module NotAMock
       end
       object.instance_eval(<<-EOF, __FILE__, __LINE__)
         def #{method}(*args, &block)
-          yield if block_given?
+          yielder = Stubber.instance.get_yielder(self, :#{method})
+          if !yielder.yield_values.empty?
+          	yield yielder.yield_values if block_given?
+          else
+            yield if block_given?
+          end
           meth = Stubber.instance.get_block(self, :#{method})
           return_value = nil
           return_value = meth.call(*args) unless meth.nil?
