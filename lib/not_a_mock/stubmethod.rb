@@ -1,9 +1,7 @@
 require 'singleton'
 
 module NotAMock
-	class StubMethod
-		attr_accessor :yield_values, :return_block
-		
+	class StubMethod		
 		def initialize(&block)
 			@block = block
 			@yield_values = []
@@ -18,6 +16,11 @@ module NotAMock
 			return_value = nil
 			(return_value = @block.call(*args)) unless @block.nil?
 			return_value
+		end
+		
+		def yield_to_block(&block)
+			return if block.nil?
+			block.call(*@yield_values)
 		end
 	end
 end

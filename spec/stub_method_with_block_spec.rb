@@ -139,3 +139,25 @@ describe NotAMock::Stubber, "when stubbing a method and providing a block in the
 		@block_was_called.should be_true
 	end
 end
+
+describe NotAMock::Stubber, "when stubbing a method that yields nil" do
+	before :each do
+		@bt = BlockTest.new
+
+		p = proc { yield false if block_given?}
+		@output = @bt.stub_method(:method_that_yields_a_value, &p).yields(nil) 
+		
+		@yielded_value = "not nil"
+		@bt.method_that_yields_a_value(){ |v| 
+			@yielded_value = v
+		}
+	end
+	
+	after :each do
+		NotAMock::Stubber.instance.reset
+	end
+	
+	it "should yield nil" do
+		@yielded_value.should be_nil
+	end	
+end 

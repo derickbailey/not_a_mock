@@ -58,12 +58,8 @@ module NotAMock
       object.instance_eval(<<-EOF, __FILE__, __LINE__)
         def #{method}(*args, &block)
           stubmethod = Stubber.instance.get_stubmethod(self, :#{method})
-          if !stubmethod.yield_values.empty?
-          	yield *stubmethod.yield_values if block_given?
-          else
-            yield if block_given?
-          end
-          return stubmethod.execute_return_block(*args)
+          stubmethod.yield_to_block(&block)
+          stubmethod.execute_return_block(*args)
         end   
       EOF
     end
