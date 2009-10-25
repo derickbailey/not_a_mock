@@ -92,4 +92,4 @@ above.
 
 Send bugs, patches, and suggestions to Pete Yandell (pete@notahat.com)
 
-Thanks to Pat Allan and Steve Hayes for contributing patches.
+Thanks to Derick Bailey, Pat Allan and Steve Hayes for contributing patches.
