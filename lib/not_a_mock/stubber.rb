@@ -9,9 +9,7 @@ module NotAMock
     include Singleton
   
     def initialize
-      @stubbed_methods = []
-      @stubbed_blocks = {}
-      @yield_values = {}
+      @stubbed_methods = {}
     end
   
     # Stub +method+ on +object+ to evalutate +block+ and return the result.
@@ -19,13 +17,11 @@ module NotAMock
     # You should call Object#stub_method rathing than calling this directly.
     def stub_method(object, method, &block) #:nodoc:
       unless @stubbed_methods.include?([object, method])
-        @stubbed_methods << [object, method]
-        @stubbed_blocks[[object, method]] = block
-        yielder = NotAMock::Yielder.new()
-        @yield_values[[object, method]] = yielder
+      	stubmethod = NotAMock::StubMethod.new(&block)
+        @stubbed_methods[[object, method]] = stubmethod
         add_hook(object, method)
       end
-      yielder
+      stubmethod
     end
         
     # Remove the stubbed +method+ on +object+.
@@ -33,25 +29,23 @@ module NotAMock
     # You should call Object#unstub_methods rather than calling this directly.
     def unstub_method(object, method) #:nodoc:
       if @stubbed_methods.delete([object, method])
-      	@stubbed_blocks.delete([object, method])
         remove_hook(object, method)
       end
     end
   
     # Removes all stub methods.
     def reset
-      @stubbed_methods.each do |object, method|
+      @stubbed_methods.each do |key, value|
+      	object = key[0]
+      	method = key[1]
         remove_hook(object, method) 
       end
-      @stubbed_methods = []
+      @stubbed_methods = {}
     end
     
-    def get_block(obj, meth)
-    	@stubbed_blocks[[obj, meth]]
-    end
-    
-    def get_yielder(obj, meth)
-    	@yield_values[[obj, meth]]
+    #Retrieve the stub method data and code for stubbed +method+ on the +object+
+    def get_stubmethod(object, method)
+    	@stubbed_methods[[object, method]]
     end
     
   private
@@ -63,16 +57,13 @@ module NotAMock
       end
       object.instance_eval(<<-EOF, __FILE__, __LINE__)
         def #{method}(*args, &block)
-          yielder = Stubber.instance.get_yielder(self, :#{method})
-          if !yielder.yield_values.empty?
-          	yield *yielder.yield_values if block_given?
+          stubmethod = Stubber.instance.get_stubmethod(self, :#{method})
+          if !stubmethod.yield_values.empty?
+          	yield *stubmethod.yield_values if block_given?
           else
             yield if block_given?
           end
-          meth = Stubber.instance.get_block(self, :#{method})
-          return_value = nil
-          return_value = meth.call(*args) unless meth.nil?
-          return_value
+          return stubmethod.execute_return_block(*args)
         end   
       EOF
     end

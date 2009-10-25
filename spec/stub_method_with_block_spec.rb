@@ -39,13 +39,17 @@ class YieldTest
 end
 
 describe NotAMock::Stubber, "when stubbing a method that is called with a block" do
-	before :all do
+	before :each do
 		@bt = BlockTest.new
 
 		@bt.stub_method(:block_method)
 		
 		@block_executed = false
 		@bt.block_method(){ @block_executed = true }
+	end
+	
+	after :each do
+		NotAMock::Stubber.instance.reset
 	end
 	
 	it "should execute the block" do
@@ -62,7 +66,7 @@ describe NotAMock::Stubber, "when stubbing a method that is called with a block"
 end
 
 describe NotAMock::Stubber, "when stubbing a method that yields two values" do
-	before :all do
+	before :each do
 		@bt = BlockTest.new
 
 		p = proc { yield false if block_given?}
@@ -88,7 +92,7 @@ describe NotAMock::Stubber, "when stubbing a method that yields two values" do
 end 
 
 describe NotAMock::Stubber, "when stubbing a method on an object that is yielded to a block" do
-	before :all do
+	before :each do
 		@stubyielded = YieldedObject.new
 		@stubyielded.stub_method(:yielding_test)
 		
