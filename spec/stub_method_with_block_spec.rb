@@ -78,6 +78,10 @@ describe NotAMock::Stubber, "when stubbing a method that yields two values" do
 		}
 	end
 	
+	after :each do
+		NotAMock::Stubber.instance.reset
+	end
+	
 	it "should yield the first value" do
 		@yielded_bool.should be_true
 	end
@@ -101,6 +105,10 @@ describe NotAMock::Stubber, "when stubbing a method on an object that is yielded
 		@yieldtest = YieldTest.new
 		@yieldtest.do_something
 	end
+
+	after :each do
+		NotAMock::Stubber.instance.reset
+	end
 	
 	it "should track the method call on the yielded object" do
 		@stubyielded.should have_received(:yielding_test)
@@ -108,5 +116,26 @@ describe NotAMock::Stubber, "when stubbing a method on an object that is yielded
 	
 	it "should track the method call on the yielding object" do
 		YieldingObject.should have_received(:yield_test)
+	end
+end
+
+describe NotAMock::Stubber, "when stubbing a method and providing a block in the yields call" do
+	before :each do
+		@bt = BlockTest.new
+
+		@block_was_called = false
+		@output = @bt.stub_method(:method_that_yields_a_value).yields(true){
+			@block_was_called = true
+		} 
+		
+		@bt.method_that_yields_a_value()
+	end	
+	
+	after :each do
+		NotAMock::Stubber.instance.reset
+	end
+	
+	it "should execute the block provided to the yield, as the stub method block" do
+		@block_was_called.should be_true
 	end
 end

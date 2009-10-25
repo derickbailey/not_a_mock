@@ -9,8 +9,9 @@ module NotAMock
 			@yield_values = []
 		end
 		
-		def yields(*args)
+		def yields(*args, &block)
 			@yield_values = args
+			(@block = block) unless block.nil?
 		end
 		
 		def execute_return_block(*args)
