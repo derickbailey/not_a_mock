@@ -74,6 +74,19 @@ Second, install the not_a_mock plugin:
 Finally, add the following to your project's spec/spec_helper.rb:
 
   config.mock_with NotAMock::RspecMockFrameworkAdapter
+  
+==== Installation via Ruby Gems
+
+At the moment, there is no hosted gem for Not_A_Mock. However, you can easily build and install the gem from the source
+directly. To do so, follow these instructions:
+
+  1. Clone the source code from http://github.com/derickbailey/not_a_mock
+  2. run 'rake jeweler:gemspec' in the root folder of your not_a_mock clone
+  3. run 'rake jeweler:build' in the root folder of your not_a_mock clone
+  4. run 'gem install -l pkg/NotAMock-#.#.#.gem' where #.#.# is the version number produced in step 2
+  
+After this you will be able to "include 'not_a_mock'" in your rspec tests, and configure rspec as shown for spec_helper.rb,
+above.
 
 == Contributing
 
