@@ -17,7 +17,7 @@ class BlockTest
 	end
 end
 
-class YieldingObject
+module YieldingObject
 	def self.yield_test
 		obj = YieldedObject.new
 		yield obj if block_given?
@@ -25,15 +25,16 @@ class YieldingObject
 end
 
 class YieldedObject
-	def yielding_test
+	def yielding_test(arg)
+		puts "#{arg}"
 	end
 end
 
 class YieldTest
 	def do_something
-		YieldingObject.yield_test {|obj|
-			obj.yielding_test
-		}
+		YieldingObject.yield_test do |obj|
+			obj.yielding_test "foo"
+		end
 	end
 end
 
