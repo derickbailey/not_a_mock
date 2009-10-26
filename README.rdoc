@@ -54,6 +54,40 @@ When you call +stub_instance+ on an ActiveRecord::Base subclass,
 Not A Mock automatically provides an +id+ method and generates an
 id for the object.
 
+=== Yielding To Method Blocks
+
+There are many situation in which a stubbed method will be called with a block attached to it. For example, 
+if you are using the Net-SSH gem, you may have code like this:
+
+  Net::SSH.start(@server, @username, :password => @password) do |ssh|
+    ssh.exec!(cmd)
+  end
+
+To correctly stub and test the SSH.start method and the ssh.exec! method, you need to yield an object to the 
+block code, that supports a method called "exec!".
+
+To do this, you can call "yields(*args)" on a stubbed method. For example, you can can stub the SSH.start method
+and the exec! method, like this:
+
+  @sshstub = Net::SSH::Connection::Session.stub_instance(:exec! => nil)
+  Net::SSH.stub_method(:start).yields(@sshstub)
+
+When the .exec! method is called from withing the code block of SSH.start, the @sshstub object will be yielded to the
+block, allowing you to track the method, provide a stubbed block of code to execute, etc.
+
+In situations where you are calling .yields(*args), you can still provide a stub method block to replace the code
+that is executed when the stub method is called. There are multiple ways of doing this:
+
+  Net::SSH.stub_method(:start).yields(@sshstub) { puts 'this is the method stub code for .start' }
+  
+or
+
+  stub_block = lambda { puts 'this is the method stub code for .start' }
+  Net::SSH.stub_method(:start, &stub_block).yields(@sshstub)
+
+Both of these syntax forms will provide the exact same functionality - the block that puts the string of information
+will be executed when you call 'Net::SSH.start'
+
 == Installation
 
 (The following describes using NotAMock with Rails. It should also be possible
