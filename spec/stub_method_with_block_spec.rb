@@ -143,9 +143,7 @@ end
 describe NotAMock::Stubber, "when stubbing a method that yields nil" do
 	before :each do
 		@bt = BlockTest.new
-
-		p = proc { yield false if block_given?}
-		@output = @bt.stub_method(:method_that_yields_a_value, &p).yields(nil) 
+		@output = @bt.stub_method(:method_that_yields_a_value).yields(nil) 
 		
 		@yielded_value = "not nil"
 		@bt.method_that_yields_a_value(){ |v| 
@@ -161,3 +159,23 @@ describe NotAMock::Stubber, "when stubbing a method that yields nil" do
 		@yielded_value.should be_nil
 	end	
 end 
+
+describe NotAMock::Stubber, "when stubbing a method and yielding with no values" do
+	before :each do
+		@bt = BlockTest.new
+		@output = @bt.stub_method(:method_that_yields_a_value).yields
+		
+		@yielded = false
+		@bt.method_that_yields_a_value(){
+			@yielded = true
+		}
+	end
+	
+	after :each do
+		NotAMock::Stubber.instance.reset
+	end
+	
+	it "should yield" do
+		@yielded.should be_true
+	end		
+end
