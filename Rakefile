@@ -28,7 +28,7 @@ namespace :jeweler do
 	Jeweler::Tasks.new do |gs|
 		gs.name = "derickbailey-notamock"
 		gs.summary = "A cleaner and DRYer alternative to mocking and stubbing with RSpec"
-		gs.description = "A cleaner and DRYer alternative to mocking and stubbing with RSpec, using Arrange-Act-Assert syntax"		gs.email = "pete@notahat.com"
+		gs.description = "A cleaner and DRYer alternative to mocking and stubbing with RSpec, using Arrange-Act-Assert syntax"
 		gs.homepage = "http://github.com/derickbailey/not_a_mock"
 		gs.authors = ["Pete Yandell", "Derick Bailey"]
 		gs.has_rdoc = false	
