@@ -111,8 +111,14 @@ Finally, add the following to your project's spec/spec_helper.rb:
   
 ==== Installation via Ruby Gems
 
-At the moment, there is no hosted gem for not_a_mock. However, you can easily build and install the gem from the source
-directly. To do so, follow these instructions:
+You can install my extended version of not_a_mock from gemcutter.org with the following steps:
+
+  1. gem source -a http://gemcutter.org
+  2. gem install derickbailey-notamock
+
+Note that you only need to do step 1, once, and you will then be able to install any gem from gemcutter.
+
+If you would like to install the gem from the source, follow these instructions:
 
   1. clone the source code from git://github.com/derickbailey/not_a_mock.git
   2. run 'rake jeweler:gemspec' in the root folder of your not_a_mock clone
